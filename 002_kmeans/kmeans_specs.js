@@ -1,4 +1,3 @@
-
 var KMeans = require('./kmeans');
 var expect = require('chai').expect;
 var randomPoints = require('../lib/rand');
@@ -10,25 +9,27 @@ var writer = require('../lib/writer');
 
   Yes, you can use it for the '_distance' function below if you wish.
 */
-var distance = function(one,two){
-	return Math.sqrt(one.reduce(function(old, _, index){return old + Math.pow( one[index] - two[index], 2) }, 0));
+var distance = function(one, two) {
+	return Math.sqrt(one.reduce(function(old, _, index) {
+		return old + Math.pow(one[index] - two[index], 2)
+	}, 0));
 }
 
 
-describe('Testing required k-means functionality.', function(){
+describe('Testing required k-means functionality.', function() {
 
-	it('is a function', function(){
+	it('is a function', function() {
 		expect(typeof KMeans).to.equal('function');
 	});
 
-	it('should have all the requisite functions', function(){
+	it('should have all the requisite functions', function() {
 		var km = new KMeans();
 		//The array 'points' is the set of vectors with which the algorithm is to be trained.
 		expect(km.points).to.be.empty;
 		//When all the clusters move less than this per training period, k-means stops adjusting							
 		expect(km.minClusterMove !== undefined).to.be.true;
-		expect(typeof km.train).to.equal('function');			//Adds vectors to points
-		expect(typeof km.clusters).to.equal('function');		//Returns a list of centroids
+		expect(typeof km.train).to.equal('function'); //Adds vectors to points
+		expect(typeof km.clusters).to.equal('function'); //Returns a list of centroids
 	});
 
 	/* As in the prior exercise, the following are functions which might make
@@ -37,19 +38,19 @@ describe('Testing required k-means functionality.', function(){
 	   look through them in any event, though, to get an idea of the kinds of
 	   functions you will need to write.
 	 */
-	xdescribe('Optional helper functions to help build the k-means algorithm', function(){
+	describe('Optional helper functions to help build the k-means algorithm', function() {
 
 		/* The function '_distance' takes as input two vectors of any length,
 		   and returns the Euclidean norm of the difference between them
 		   That is, it takes two vectors of length n and returns the Euclidean distance
 		   between the positions that they indicate in n-dimensional space.
 		*/
-		it('has _distance, which determines the Euclidean norm / distance between two vectors', function(){
+		it('has _distance, which determines the Euclidean norm / distance between two vectors', function() {
 			var km = new KMeans();
 			expect(typeof km._distance).to.equal('function');
-			expect(km._distance([0,0],[3,4])).to.equal(5);
-			expect(km._distance([20,0],[21,0])).to.equal(1);
-			expect(km._distance([20,20],[20,20])).to.equal(0);
+			expect(km._distance([0, 0], [3, 4])).to.equal(5);
+			expect(km._distance([20, 0], [21, 0])).to.equal(1);
+			expect(km._distance([20, 20], [20, 20])).to.equal(0);
 		});
 
 		/* The function '_max' takes as input an array and a function.
@@ -63,16 +64,33 @@ describe('Testing required k-means functionality.', function(){
 		   This is actually pretty much the same as the lodash max,
 		   so if you want to you can just use that.
 		 */
-		it('has _max, which takes an array and a function and returns the element from the array for which what the function returns is highest', function(){
+		it('has _max, which takes an array and a function and returns the element from the array for which what the function returns is highest', function() {
 			var km = new KMeans();
 			expect(typeof km._max).to.equal('function');
-			expect(km._max([0,1,2,3,4,5,6], function(n){return n;})).to.equal(6);
-			expect(km._max([0,1,2,3,4,5,6], function(n){return -n;})).to.equal(0);
-			expect(km._max(['a','sas','asdasd','ssd'], function(n){return n.length;})).to.equal('asdasd');
+			expect(km._max([0, 1, 2, 3, 4, 5, 6], function(n) {
+				return n;
+			})).to.equal(6);
+
+			expect(km._max([0, 1, 2, 3, 4, 5, 6], function(n) {
+				return -n;
+			})).to.equal(0);
+
+			expect(km._max(['a', 'sas', 'asdasd', 'ssd'], function(n) {
+				return n.length;
+			})).to.equal('asdasd');
+
 			//With index
-			expect(km._max([0,1,2,3,4,5,6], function(n, index){return -index;})).to.equal(0);
-			expect(km._max([10,1,2,3,4,5,6], function(n, index){return -index;})).to.equal(10);
-			expect(km._max([7,1,2,6,4,3,2], function(n, index){return index+n;})).to.equal(6);
+			expect(km._max([0, 1, 2, 3, 4, 5, 6], function(n, index) {
+				return -index;
+			})).to.equal(0);
+
+			expect(km._max([10, 1, 2, 3, 4, 5, 6], function(n, index) {
+				return -index;
+			})).to.equal(10);
+
+			expect(km._max([7, 1, 2, 6, 4, 3, 2], function(n, index) {
+				return index + n;
+			})).to.equal(6);
 		});
 
 		/* The function '_clusterEvaluator' takes as input two things--an array of
@@ -94,12 +112,40 @@ describe('Testing required k-means functionality.', function(){
 
 		   Might want to use '_distance'.
 		*/
-		it('has _clusterEvaluator, which scores clusters according to the average distances from points to centroids in each', function(){
+		it('has _clusterEvaluator, which scores clusters according to the average distances from points to centroids in each', function() {
 			var km = new KMeans();
 			expect(typeof km._clusterEvaluator).to.equal('function');
-			expect(km._clusterEvaluator( [[0,0],[100,100]],[[1,0],[0,1],[101,100],[100,101]] ) ).to.equal(4);
-			expect(km._clusterEvaluator( [[0,0],[100,100]],[[2,0],[0,2],[102,100],[100,102]] ) ).to.equal(16);
-			expect(km._clusterEvaluator( [[0,0]],[[3,0],[0,3],[0,-3],[-3,0]] ) ).to.equal(36);
+
+
+
+			expect(km._clusterEvaluator([
+				[0, 0],
+				[100, 100]
+			], [
+				[1, 0],
+				[0, 1],
+				[101, 100],
+				[100, 101]
+			])).to.equal(4);
+
+			expect(km._clusterEvaluator([
+				[0, 0],
+				[100, 100]
+			], [
+				[2, 0],
+				[0, 2],
+				[102, 100],
+				[100, 102]
+			])).to.equal(16);
+
+			expect(km._clusterEvaluator([
+				[0, 0]
+			], [
+				[3, 0],
+				[0, 3],
+				[0, -3],
+				[-3, 0]
+			])).to.equal(36);
 		});
 
 		/* The function '_averageLocation' takes an array of vectors and returns the mean
@@ -107,15 +153,43 @@ describe('Testing required k-means functionality.', function(){
 
 		   This could obviously be useful when determining the center of a group of vectors.
 		 */
-		it('has _averageLocation, which takes an array of vectors and returns the mean location', function(){
+		it('has _averageLocation, which takes an array of vectors and returns the mean location', function() {
 			var km = new KMeans();
 			expect(typeof km._averageLocation).to.equal('function');
-			expect(km._averageLocation([[1,1],[1,1],[4,4]])).to.eql([2,2])
-			expect(km._averageLocation([[1,1],[1,1],[2,2],[2,2]])).to.eql([1.5,1.5])
-			expect(km._averageLocation([[1,1],[2,2],[3,3]])).to.eql([2,2])
-			expect(km._averageLocation([[1,1],[1,1]])).to.eql([1,1])
-			expect(km._averageLocation([[1,2],[1,2],[2,3],[3,4],[3,4]])).to.eql([2,3])
-			expect(km._averageLocation([[1,10],[1,10],[2,10],[3,10],[3,10]])).to.eql([2,10])
+			expect(km._averageLocation([
+				[1, 1],
+				[1, 1],
+				[4, 4]
+			])).to.eql([2, 2])
+			expect(km._averageLocation([
+				[1, 1],
+				[1, 1],
+				[2, 2],
+				[2, 2]
+			])).to.eql([1.5, 1.5])
+			expect(km._averageLocation([
+				[1, 1],
+				[2, 2],
+				[3, 3]
+			])).to.eql([2, 2])
+			expect(km._averageLocation([
+				[1, 1],
+				[1, 1]
+			])).to.eql([1, 1])
+			expect(km._averageLocation([
+				[1, 2],
+				[1, 2],
+				[2, 3],
+				[3, 4],
+				[3, 4]
+			])).to.eql([2, 3])
+			expect(km._averageLocation([
+				[1, 10],
+				[1, 10],
+				[2, 10],
+				[3, 10],
+				[3, 10]
+			])).to.eql([2, 10])
 		});
 
 		/* The following function, '_shiftCentroids', is rather the heart of k-means.  
@@ -133,15 +207,60 @@ describe('Testing required k-means functionality.', function(){
 
 		   May want to use '_distance', '_averageLocation.''
 		  */
-		it('has _shiftCentroids, which takes centroids, and all the points and shifts centroids a step', function(){
+		it('has _shiftCentroids, which takes centroids, and all the points and shifts centroids a step', function() {
 			var km = new KMeans();
 			expect(typeof km._shiftCentroids).to.equal('function');
 			//Shouldn't shift anything at all.
-			expect(km._shiftCentroids([[0,0],[100,100]],[[1,0],[0,1],[-1,0],[0,-1],[100,101],[101,100],[99,100],[100,99]])).to.eql([[0,0],[100,100]]);
+			expect(km._shiftCentroids([
+				[0, 0],
+				[100, 100]
+			], [
+				[1, 0],
+				[0, 1],
+				[-1, 0],
+				[0, -1],
+				[100, 101],
+				[101, 100],
+				[99, 100],
+				[100, 99]
+			])).to.eql([
+				[0, 0],
+				[100, 100]
+			]);
 			//Should shift one of the centroids, but not the other one.
-			expect(km._shiftCentroids([[0,0],[100,100]],[[1,0],[0,1],[-1,0],[0,-1],[200,201],[201,200],[199,200],[200,199]])).to.eql([[0,0],[200,200]]);
+			expect(km._shiftCentroids([
+				[0, 0],
+				[100, 100]
+			], [
+				[1, 0],
+				[0, 1],
+				[-1, 0],
+				[0, -1],
+				[200, 201],
+				[201, 200],
+				[199, 200],
+				[200, 199]
+			])).to.eql([
+				[0, 0],
+				[200, 200]
+			]);
 			//Should shift both of the centroids.
-			expect(km._shiftCentroids([[0,0],[100,100]],[[1,0],[0,1],[-1,0],[0,-1],[200,201],[201,200],[199,200],[200,199]])).to.eql([[0,0],[200,200]]);
+			expect(km._shiftCentroids([
+				[0, 0],
+				[100, 100]
+			], [
+				[1, 0],
+				[0, 1],
+				[-1, 0],
+				[0, -1],
+				[200, 201],
+				[201, 200],
+				[199, 200],
+				[200, 199]
+			])).to.eql([
+				[0, 0],
+				[200, 200]
+			]);
 		});
 
 		/* The function '_haveShifted' takes two lists of vectors.
@@ -152,17 +271,63 @@ describe('Testing required k-means functionality.', function(){
 
 		   Might want to use '_distance.''
 		 */
-		it('has _haveShifted, which takes two arrays of centroids, and determines if they have shifted', function(){
+		it('has _haveShifted, which takes two arrays of centroids, and determines if they have shifted', function() {
 			var km = new KMeans();
 			expect(typeof km._shiftCentroids).to.equal('function');
-			expect(km._haveShifted([[1,1,1]],[[1,1,1]])).to.equal(false)
-			expect(km._haveShifted([[1,1,1],[2,2,2]],[[1,1,1],[2,2,2]])).to.equal(false)
-			expect(km._haveShifted([[1,1,1],[2,2,2]],[[1,1,1],[2,2,2.4]])).to.equal(true)
-			expect(km._haveShifted([[1,1,1.1],[2,2,2]],[[1,1,1],[2,2,2]])).to.equal(true)
-			expect(km._haveShifted([[1,1.01,1],[2,2,2]],[[1,1,1],[2,2,2]])).to.equal(true)
-			expect(km._haveShifted([[1,1],[2,2]],[[1,1],[2,2]])).to.equal(false)
-			expect(km._haveShifted([[1],[2]],[[1],[2]])).to.equal(false)
-			expect(km._haveShifted([[1],[2]],[[1],[2.1]])).to.equal(true)
+			expect(km._haveShifted([
+				[1, 1, 1]
+			], [
+				[1, 1, 1]
+			])).to.equal(false)
+			expect(km._haveShifted([
+				[1, 1, 1],
+				[2, 2, 2]
+			], [
+				[1, 1, 1],
+				[2, 2, 2]
+			])).to.equal(false)
+			expect(km._haveShifted([
+				[1, 1, 1],
+				[2, 2, 2]
+			], [
+				[1, 1, 1],
+				[2, 2, 2.4]
+			])).to.equal(true)
+			expect(km._haveShifted([
+				[1, 1, 1.1],
+				[2, 2, 2]
+			], [
+				[1, 1, 1],
+				[2, 2, 2]
+			])).to.equal(true)
+			expect(km._haveShifted([
+				[1, 1.01, 1],
+				[2, 2, 2]
+			], [
+				[1, 1, 1],
+				[2, 2, 2]
+			])).to.equal(true)
+			expect(km._haveShifted([
+				[1, 1],
+				[2, 2]
+			], [
+				[1, 1],
+				[2, 2]
+			])).to.equal(false)
+			expect(km._haveShifted([
+				[1],
+				[2]
+			], [
+				[1],
+				[2]
+			])).to.equal(false)
+			expect(km._haveShifted([
+				[1],
+				[2]
+			], [
+				[1],
+				[2.1]
+			])).to.equal(true)
 		});
 
 		/* If you follow the path lined out here, .cluster will return the best cluster
@@ -180,17 +345,30 @@ describe('Testing required k-means functionality.', function(){
 		   It takes as input (1) the number of clusters whose centers it is trying to locate as well as
 		   (2) the data it is trying to find clusters on.
 		 */
-		it('has _clusters, which returns a single cluster, but without trying multiple iterations of k-means', function(){
+		it('has _clusters, which returns a single cluster, but without trying multiple iterations of k-means', function() {
 			var km = new KMeans();
 			expect(typeof km._clusters).to.equal('function');
 			//Returns the right number.
-			expect(km._clusters(1,[[1,1],[0,0]]).length).to.equal(1);
-			expect(km._clusters(2,[[1,1],[0,0]]).length).to.equal(2);
-			expect(km._clusters(3,[[1,1],[0,0],[2,2]]).length).to.equal(3);
+			expect(km._clusters(1, [
+				[1, 1],
+				[0, 0]
+			]).length).to.equal(1);
+			expect(km._clusters(2, [
+				[1, 1],
+				[0, 0]
+			]).length).to.equal(2);
+			expect(km._clusters(3, [
+				[1, 1],
+				[0, 0],
+				[2, 2]
+			]).length).to.equal(3);
 			//Returns in a sensical location
-			var temp = km._clusters(2,[[1,0],[0,0]]);
-			expect( distance([0,0], temp[0]) == 1 || distance([0,0], temp[0]) == 0 ).to.equal(true)
-			expect( distance([0,0], temp[1]) == 1 || distance([0,0], temp[1]) == 0 ).to.equal(true)
+			var temp = km._clusters(2, [
+				[1, 0],
+				[0, 0]
+			]);
+			expect(distance([0, 0], temp[0]) == 1 || distance([0, 0], temp[0]) == 0).to.equal(true)
+			expect(distance([0, 0], temp[1]) == 1 || distance([0, 0], temp[1]) == 0).to.equal(true)
 		});
 
 		/* The function '_manyClusters' invokes '_clusters' several times, and each time
@@ -202,23 +380,23 @@ describe('Testing required k-means functionality.', function(){
 		   (It pulls the vectors that it will be passing to _clusters'
 		   second argument from this.points.)
 		*/
-		it('has _manyClusters, which is returns an array of clusters', function(){
+		it('has _manyClusters, which is returns an array of clusters', function() {
 			var km = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
 			km.train(typeA);
 			expect(typeof km._manyClusters).to.equal('function');
-			expect(km._manyClusters(10,2).length).to.equal(10);
-			expect(km._manyClusters(10,2)[0].length).to.equal(2);
+			expect(km._manyClusters(10, 2).length).to.equal(10);
+			expect(km._manyClusters(10, 2)[0].length).to.equal(2);
 		});
 
 	});
 
 	/*Alright, all of that prep work done, now for the rest of the problem.*/
-	describe('The algorithm can find locations successfully with the function clusters.', function(){
+	describe('The algorithm can find locations successfully with the function clusters.', function() {
 
-		it(' adds points to the list of points that it trains with, when train is called', function(){
+		it(' adds points to the list of points that it trains with, when train is called', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
 			knn.train(typeA);
 			expect(knn.points.length).to.equal(100);
 		});
@@ -246,44 +424,44 @@ describe('Testing required k-means functionality.', function(){
 			Tada!  That's it.
 		*/
 
-		it(' can determine the location of two centroids with .clusters, being told there are two', function(){
+		it(' can determine the location of two centroids with .clusters, being told there are two', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[50,0]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [50, 0]);
 			var both = typeB.concat(typeA);
 			knn.train(both);
 			var res = knn.clusters(2);
 			expect(res.length).to.equal(2);
-			expect( (distance(res[0], [0.5,0.5]) < .1) || (distance(res[0], [50.5,0.5]) < .1) ).to.be.true;
-			expect( (distance(res[1], [0.5,0.5]) < .1) || (distance(res[1], [50.5,0.5]) < .1) ).to.be.true;
+			expect((distance(res[0], [0.5, 0.5]) < .1) || (distance(res[0], [50.5, 0.5]) < .1)).to.be.true;
+			expect((distance(res[1], [0.5, 0.5]) < .1) || (distance(res[1], [50.5, 0.5]) < .1)).to.be.true;
 		});
 
-		it(' can determine the location of three centroids, being told there are three', function(){
+		it(' can determine the location of three centroids, being told there are three', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[30,0]);
-			var typeC = randomPoints(100,[1,1],[15,20]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [30, 0]);
+			var typeC = randomPoints(100, [1, 1], [15, 20]);
 			var all = typeA.concat(typeB.concat(typeC));
 			knn.train(all);
 			var res = knn.clusters(3);
 			expect(res.length).to.equal(3);
-			expect( (distance(res[0], [0.5,0.5]) < .1) || (distance(res[0], [30.5,0.5]) < .1) || (distance(res[0], [15.5,20.5]) < .1)).to.be.true;
-			expect( (distance(res[1], [0.5,0.5]) < .1) || (distance(res[1], [30.5,0.5]) < .1) || (distance(res[1], [15.5,20.5]) < .1)).to.be.true;
-			expect( (distance(res[2], [0.5,0.5]) < .1) || (distance(res[2], [30.5,0.5]) < .1) || (distance(res[2], [15.5,20.5]) < .1)).to.be.true;
+			expect((distance(res[0], [0.5, 0.5]) < .1) || (distance(res[0], [30.5, 0.5]) < .1) || (distance(res[0], [15.5, 20.5]) < .1)).to.be.true;
+			expect((distance(res[1], [0.5, 0.5]) < .1) || (distance(res[1], [30.5, 0.5]) < .1) || (distance(res[1], [15.5, 20.5]) < .1)).to.be.true;
+			expect((distance(res[2], [0.5, 0.5]) < .1) || (distance(res[2], [30.5, 0.5]) < .1) || (distance(res[2], [15.5, 20.5]) < .1)).to.be.true;
 		});
 
-		it(' can determine the location of three closer centroids, being told there are three', function(){
+		it(' can determine the location of three closer centroids, being told there are three', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[3,0]);
-			var typeC = randomPoints(100,[1,1],[1.5,2]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [3, 0]);
+			var typeC = randomPoints(100, [1, 1], [1.5, 2]);
 			var all = typeA.concat(typeB.concat(typeC));
 			knn.train(all);
 			var res = knn.clusters(3);
 			expect(res.length).to.equal(3);
-			expect( (distance(res[0], [0.5,0.5]) < .1) || (distance(res[0], [3.5,0.5]) < .1) || (distance(res[0], [2,2.5]) < .1)).to.be.true;
-			expect( (distance(res[1], [0.5,0.5]) < .1) || (distance(res[1], [3.5,0.5]) < .1) || (distance(res[1], [2,2.5]) < .1)).to.be.true;
-			expect( (distance(res[2], [0.5,0.5]) < .1) || (distance(res[2], [3.5,0.5]) < .1) || (distance(res[2], [2,2.5]) < .1)).to.be.true;
+			expect((distance(res[0], [0.5, 0.5]) < .1) || (distance(res[0], [3.5, 0.5]) < .1) || (distance(res[0], [2, 2.5]) < .1)).to.be.true;
+			expect((distance(res[1], [0.5, 0.5]) < .1) || (distance(res[1], [3.5, 0.5]) < .1) || (distance(res[1], [2, 2.5]) < .1)).to.be.true;
+			expect((distance(res[2], [0.5, 0.5]) < .1) || (distance(res[2], [3.5, 0.5]) < .1) || (distance(res[2], [2, 2.5]) < .1)).to.be.true;
 		});
 	});
 
@@ -300,12 +478,14 @@ describe('Testing required k-means functionality.', function(){
 	   as well as the characters 5 and 9, and the characters 4, 6, and 8.  Some 
 	   of these groupings are "better" than others.  Which and why?
 	*/
-	describe('The algorithm finds centroids for the MNIST data "successfully"', function(){
+	describe('The algorithm finds centroids for the MNIST data "successfully"', function() {
 
-		it('finds centroids data consisting of the characters 1 and 0', function(done){
+		it('finds centroids data consisting of the characters 1 and 0', function(done) {
 			this.timeout(10000);
 			var knn = new KMeans();
-			var someElements = mnist.zeroAndOne().map(function(n){return n[0]}).slice(0,100);
+			var someElements = mnist.zeroAndOne().map(function(n) {
+				return n[0]
+			}).slice(0, 100);
 			knn.train(someElements)
 			console.log('Finding clusters for images consisting of 1 and 0')
 			var res = knn.clusters(2);
@@ -313,10 +493,12 @@ describe('Testing required k-means functionality.', function(){
 			writer.exportGrouped(res, someElements, done, "zeroOne")
 		});
 
-		it('finds centroids for data consisting of the characters 5 and 9', function(done){
+		it('finds centroids for data consisting of the characters 5 and 9', function(done) {
 			this.timeout(10000);
 			var knn = new KMeans();
-			var someElements = mnist.fiveAndNine().map(function(n){return n[0]}).slice(0,120);
+			var someElements = mnist.fiveAndNine().map(function(n) {
+				return n[0]
+			}).slice(0, 120);
 			knn.train(someElements)
 			console.log('Finding clusters for images consisting of 5 and 9')
 			var res = knn.clusters(2);
@@ -324,10 +506,12 @@ describe('Testing required k-means functionality.', function(){
 			writer.exportGrouped(res, someElements, done, "fiveNine")
 		});
 
-		it('finds centroids for data consisting of the characters 4 and 6 and 8', function(done){
+		it('finds centroids for data consisting of the characters 4 and 6 and 8', function(done) {
 			this.timeout(10000);
 			var knn = new KMeans();
-			var someElements = mnist.fourAndSixAndEight().map(function(n){return n[0]}).slice(0,150);
+			var someElements = mnist.fourAndSixAndEight().map(function(n) {
+				return n[0]
+			}).slice(0, 150);
 			knn.train(someElements)
 			console.log('Finding clusters for images consisting of 4 and 6 and 8')
 			var res = knn.clusters(3);
@@ -371,9 +555,9 @@ describe('Testing required k-means functionality.', function(){
   ...of course, most cases will not be nearly as clear as the above.
 */
 
-xdescribe('Testing optional k-means functionality', function(){
+xdescribe('Testing optional k-means functionality', function() {
 
-	xdescribe('The algorithm can determine the number of clusters, not being told how many there are.', function(){
+	xdescribe('The algorithm can determine the number of clusters, not being told how many there are.', function() {
 
 		/* The function 'findClusters' should take a number, which is the maximum
 		   number of clusters it should search for.
@@ -386,58 +570,58 @@ xdescribe('Testing optional k-means functionality', function(){
 		   It took me about 25 lines of code to do this, although that
 		   could have probably been minimized.
 		 */
-		it('can determine the number of clusters when there are two, very separate', function(){
+		it('can determine the number of clusters when there are two, very separate', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[50,0]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [50, 0]);
 			var both = typeA.concat(typeB)
 			knn.train(both);
 			var res = knn.findClusters(10);
 			expect(res.length).to.equal(2);
 		});
 
-		it('can determine the number of clusters when there are three, pretty separate', function(){
+		it('can determine the number of clusters when there are three, pretty separate', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[5,0]);
-			var typeC = randomPoints(100,[1,1],[3,4]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [5, 0]);
+			var typeC = randomPoints(100, [1, 1], [3, 4]);
 			var all = typeA.concat(typeB.concat(typeC));
 			knn.train(all)
 			var res = knn.findClusters(10);
 			expect(res.length).to.equal(3);
 		});
 
-		it('can determine the number of clusters when there are four, fairly close', function(){
+		it('can determine the number of clusters when there are four, fairly close', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[2,0]);
-			var typeC = randomPoints(100,[1,1],[1,1]);
-			var typeD = randomPoints(100,[1,1],[1,-1]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [2, 0]);
+			var typeC = randomPoints(100, [1, 1], [1, 1]);
+			var typeD = randomPoints(100, [1, 1], [1, -1]);
 			var all = typeA.concat(typeB.concat(typeC.concat(typeD)));
 			knn.train(all)
 			var res = knn.findClusters(10);
 			expect(res.length).to.equal(4);
 		});
 
-		it('can determine the number of clusters when there are five, pretty close ones', function(){
+		it('can determine the number of clusters when there are five, pretty close ones', function() {
 			var knn = new KMeans();
-			var typeA = randomPoints(100,[1,1],[0,0]);
-			var typeB = randomPoints(100,[1,1],[2,0]);
-			var typeC = randomPoints(100,[1,1],[0,2]);
-			var typeD = randomPoints(100,[1,1],[-2,0]);
-			var typeE = randomPoints(100,[1,1],[0,-2]);
+			var typeA = randomPoints(100, [1, 1], [0, 0]);
+			var typeB = randomPoints(100, [1, 1], [2, 0]);
+			var typeC = randomPoints(100, [1, 1], [0, 2]);
+			var typeD = randomPoints(100, [1, 1], [-2, 0]);
+			var typeE = randomPoints(100, [1, 1], [0, -2]);
 			var all = typeA.concat(typeB.concat(typeC.concat(typeD.concat(typeE))));
 			knn.train(all)
 			var res = knn.findClusters(10);
 			expect(res.length).to.equal(5);
 		});
 
-		it('can determine the number of clusters when there are four, very, very close ones', function(){
+		it('can determine the number of clusters when there are four, very, very close ones', function() {
 			var knn = new KMeans();
-			var typeB = randomPoints(100,[1,1],[1,0]);
-			var typeC = randomPoints(100,[1,1],[0,1]);
-			var typeD = randomPoints(100,[1,1],[-1,0]);
-			var typeE = randomPoints(100,[1,1],[0,-1]);
+			var typeB = randomPoints(100, [1, 1], [1, 0]);
+			var typeC = randomPoints(100, [1, 1], [0, 1]);
+			var typeD = randomPoints(100, [1, 1], [-1, 0]);
+			var typeE = randomPoints(100, [1, 1], [0, -1]);
 			var all = typeB.concat(typeC.concat(typeD.concat(typeE)));
 			knn.train(all)
 			var res = knn.findClusters(10);
@@ -454,24 +638,28 @@ xdescribe('Testing optional k-means functionality', function(){
 
 	   Anyhow, just do here what you did in the immediately prior section with the fake data.
 	 */
-	xdescribe('it can determine the number of clusters in the MNIST data as well', function(){
+	xdescribe('it can determine the number of clusters in the MNIST data as well', function() {
 
-		it('can determine the number of clusters when there are two characters', function(done){
+		it('can determine the number of clusters when there are two characters', function(done) {
 			//Fifteen second timeout...
 			this.timeout(15000);
 			var knn = new KMeans();
-			var someElements = mnist.zeroAndOne().map(function(n){return n[0]}).slice(0,100);
+			var someElements = mnist.zeroAndOne().map(function(n) {
+				return n[0]
+			}).slice(0, 100);
 			knn.train(someElements);
 			var res = knn.findClusters(8);
 			expect(res.length).to.equal(2);
 			writer.exportGrouped(res, someElements, done, "clusterCountedZeroAndOne");
 		});
 
-		it('can determine the number of clusters when there are three characters', function(done){
+		it('can determine the number of clusters when there are three characters', function(done) {
 			//Fifteen second timeout.  This can take a bit.
 			this.timeout(15000);
 			var knn = new KMeans();
-			var someElements = mnist.zeroAndOneAndFive().map(function(n){return n[0]}).slice(0,100);
+			var someElements = mnist.zeroAndOneAndFive().map(function(n) {
+				return n[0]
+			}).slice(0, 100);
 			knn.train(someElements);
 			var res = knn.findClusters(8);
 			expect(res.length).to.equal(3);
@@ -481,4 +669,3 @@ xdescribe('Testing optional k-means functionality', function(){
 	});
 
 });
-
